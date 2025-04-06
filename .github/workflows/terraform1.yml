@@ -19,16 +19,19 @@ jobs:
       - name: GIT Checkout
         uses: actions/checkout@v4
 
-      # Passo que instala/configura o Terraform
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: "1.0.0"  # Ajuste para a versão desejada
+          terraform_version: "1.0.0"  # Altere para a versão desejada
 
       - name: Terraform Init
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.TERRAFORM_KEY01 }}
         run: |
+          echo "DEBUG: Verificando o caminho do Terraform"
+          which terraform
+          echo "DEBUG: Versão do Terraform instalada"
+          terraform --version
           cd ./terra_workflow
           terraform init
           pwd
