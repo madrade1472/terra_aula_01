@@ -19,6 +19,7 @@ jobs:
       - name: GIT Checkout
         uses: actions/checkout@v4
 
+      # Passo que instala/configura o Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
