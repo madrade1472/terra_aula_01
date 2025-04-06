@@ -8,7 +8,9 @@ on:
     paths:
       - "terra_workflow/**"
 
-concurrency: ${{ github.repository }}
+concurrency:
+  group: ${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
   ep1_cicd:
@@ -23,6 +25,12 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: "1.0.0"  # Altere para a versão desejada
+
+      - name: Debug: Verificar PATH e Terraform
+        run: |
+          echo "PATH atual: $PATH"
+          which terraform || echo "terraform não encontrado no PATH"
+          terraform --version || echo "Erro ao executar 'terraform --version'"
 
       - name: Terraform Init
         env:
