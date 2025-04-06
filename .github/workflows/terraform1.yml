@@ -1,4 +1,4 @@
-name: "CICD Terraform2"
+name: "CICD Terraform1"
 
 on:
   push:
@@ -7,6 +7,10 @@ on:
       - terraform_script1
     paths:
       - "terra_workflow/**"
+
+concurrency:
+  group: ${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
   ep1_cicd:
