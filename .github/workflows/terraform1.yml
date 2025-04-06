@@ -1,0 +1,55 @@
+name: "CICD Terraform1"
+
+on:
+  push:
+    branches:
+      - main
+      - terraform_script1
+    paths:
+      - "terra_workflow/**"
+
+concurrency: ${{ github.repository }}
+
+jobs:
+  ep1_cicd:
+    name: "CICD Job TERRA1"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: GIT Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.TERRAFORM_KEY01 }}
+        run: |
+          cd ./terra_workflow
+          terraform init
+          pwd
+
+      - name: Terraform Plan
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.TERRAFORM_KEY01 }}
+        run: |
+          cd ./terra_workflow
+          terraform plan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.TERRAFORM_KEY01 }}
+        run: |
+          cd ./terra_workflow
+          terraform apply --auto-approve
+
+      - name: Upload File
+        if: github.ref == 'refs/heads/main'
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.TERRAFORM_KEY01 }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/git_terraform.json
+        run: |
+          cd ./terra_workflow
+          echo -n "$GOOGLE_CREDENTIALS" > $GOOGLE_APPLICATION_CREDENTIALS
+          pip install gcloud
+          python gcsUpoad.py
+          rm $GOOGLE_APPLICATION_CREDENTIALS
