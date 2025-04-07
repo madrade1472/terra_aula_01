@@ -21,16 +21,28 @@ jobs:
       - name: GIT Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
+      # Primeira tentativa: instalar o Terraform via ação oficial
+      - name: Setup Terraform (via ação oficial)
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: "1.0.0"  # Ajuste para a versão desejada
+          terraform_version: "1.0.0"  # Altere para a versão desejada
 
+      # Etapa de debug para confirmar se o terraform foi instalado
       - name: Debug: Verificar PATH e Terraform
         run: |
           echo "PATH atual: $PATH"
           which terraform || echo "terraform não encontrado no PATH"
           terraform --version || echo "Erro ao executar 'terraform --version'"
+
+      # Se na etapa de debug o terraform não foi encontrado, instale-o manualmente
+      - name: Install Terraform Manual
+        if: failure()
+        run: |
+          echo "Terraform não foi encontrado via setup-terraform. Instalando manualmente..."
+          wget https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
+          unzip terraform_1.0.0_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform --version
 
       - name: Terraform Init
         env:
